@@ -31,40 +31,70 @@ function replaceChapterMarkersWithVerseOne($: cheerio.CheerioAPI, root: cheerio.
   })
 }
 
+function extractPassageBlocks($: cheerio.CheerioAPI): string[] {
+  const paragraphs: string[] = []
+
+  $('.passage-text').each((_, passageElement) => {
+    const passageRoot = $(passageElement).clone()
+    passageRoot
+      .find(
+        '.footnotes, .crossrefs, .publisher-info-bottom, script, style, sup.footnote, sup.crossreference'
+      )
+      .remove()
+    replaceChapterMarkersWithVerseOne($, passageRoot)
+
+    passageRoot.find('.text').each((_, element) => {
+      const paragraphText = normalizeWhitespace($(element).text())
+      if (paragraphText) {
+        paragraphs.push(paragraphText)
+      }
+    })
+  })
+
+  return paragraphs
+}
+
 function parsePassageHtml(html: string, citation: string, version: string, sourceUrl: string): PassageResult {
   const $ = cheerio.load(html)
 
   const heading =
     $('.passage-text .passagedesc').first().text().trim() ||
-    $('.dropdown-display-text').first().text().trim() ||
+    $('.dropdown-display-text')
+      .filter((_, element) => !/translation|version|bible/i.test($(element).text()))
+      .first()
+      .text()
+      .trim() ||
     citation
 
-  const passageRoot = $('.passage-text').first()
-  if (!passageRoot.length) {
+  const passageRoots = $('.passage-text')
+  if (!passageRoots.length) {
     throw new Error('Could not find passage content on Bible Gateway.')
   }
 
-  passageRoot.find('.footnotes, .crossrefs, .publisher-info-bottom, script, style').remove()
-  replaceChapterMarkersWithVerseOne($, passageRoot)
-
-  const paragraphs: string[] = []
-  passageRoot.find('.text').each((_, element) => {
-    const paragraphText = normalizeWhitespace($(element).text())
-    if (paragraphText) {
-      paragraphs.push(paragraphText)
-    }
-  })
+  const paragraphs = extractPassageBlocks($)
 
   if (paragraphs.length === 0) {
-    const fallbackText = normalizeWhitespace(passageRoot.text())
+    const fallbackText = normalizeWhitespace(passageRoots.first().text())
     if (!fallbackText) {
       throw new Error('Passage content was empty.')
     }
     paragraphs.push(fallbackText)
   }
 
+  // Prefer a combined citation when Bible Gateway returns multiple passage blocks
+  // (e.g. Romans 7:18,23 rendered as separate sections).
+  const passageTitles = $('.dropdown-display-text')
+    .map((_, element) => $(element).text().trim())
+    .get()
+    .filter((title, index, all) => {
+      if (!title || !/\d/.test(title)) {
+        return false
+      }
+      return all.indexOf(title) === index
+    })
+
   return {
-    citation: heading,
+    citation: passageTitles.length > 1 ? citation : heading || citation,
     text: paragraphs.join('\n\n'),
     version,
     sourceUrl

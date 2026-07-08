@@ -41,15 +41,32 @@ function getAssetPath(...segments: string[]): string {
   return candidates[0]
 }
 
+function createAppIcon(): Electron.NativeImage {
+  const iconPath = getAssetPath('icon.png')
+  const image = nativeImage.createFromPath(iconPath)
+  if (!image.isEmpty()) {
+    return image
+  }
+
+  return nativeImage.createEmpty()
+}
+
 function createTrayIcon(): Electron.NativeImage {
   const trayIconPath = getAssetPath('icon-tray.png')
   const trayImage = nativeImage.createFromPath(trayIconPath)
   if (!trayImage.isEmpty()) {
+    const trayIcon2xPath = getAssetPath('icon-tray@2x.png')
+    const trayImage2x = nativeImage.createFromPath(trayIcon2xPath)
+    if (!trayImage2x.isEmpty()) {
+      trayImage.addRepresentation({
+        scaleFactor: 2.0,
+        buffer: trayImage2x.toPNG()
+      })
+    }
     return trayImage
   }
 
-  const iconPath = getAssetPath('icon.png')
-  const image = nativeImage.createFromPath(iconPath)
+  const image = createAppIcon()
   if (!image.isEmpty()) {
     return image.resize({ width: 22, height: 22, quality: 'best' })
   }
@@ -76,6 +93,7 @@ function createPopupWindow(x: number, y: number): BrowserWindow {
     skipTaskbar: true,
     transparent: false,
     backgroundColor: '#1a1a2e',
+    icon: createAppIcon(),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -177,6 +195,7 @@ function createSettingsWindow(): BrowserWindow {
     show: false,
     autoHideMenuBar: true,
     title: 'VersePeek Settings',
+    icon: createAppIcon(),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -270,16 +289,17 @@ async function handleHotkeyTrigger(): Promise<void> {
       return
     }
 
-    const parsed = await parseReference(selectedText)
+    const parsed = await parseReference(selectedText, isValidTranslation)
     if (!parsed) {
       notifyPassageError(
-        'Could not recognize a Bible reference. Try formats like John 3:16, John 3:16;19, or Romans 8:28-30.'
+        'Could not recognize a Bible reference. Try formats like John 3:16, John 3:16 NKJV, or Romans chapter 7, verses 18 and 23.'
       )
       return
     }
 
     const settings = getSettings()
-    await lookupAndShowPassage(parsed.human, parsed.osis, settings.defaultTranslation)
+    const version = parsed.version ?? settings.defaultTranslation
+    await lookupAndShowPassage(parsed.human, parsed.osis, version)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unexpected error during lookup.'
     notifyPassageError(message)

@@ -1,6 +1,7 @@
 export interface ParsedReference {
   osis: string
   human: string
+  version?: string
 }
 
 type BcvParser = {
@@ -26,14 +27,46 @@ async function getParser(): Promise<BcvParser> {
   return parserPromise
 }
 
-export async function parseReference(text: string): Promise<ParsedReference | null> {
+type TranslationChecker = (code: string) => boolean
+
+const TRAILING_VERSION_PATTERN =
+  /^(.*?)\s*[(\[]?\s*([A-Za-z][A-Za-z0-9]{1,11})\s*[)\]]?\s*$/
+
+export function extractTrailingTranslation(
+  text: string,
+  isValidTranslation: TranslationChecker
+): { reference: string; version?: string } {
+  const trimmed = text.trim()
+  const match = trimmed.match(TRAILING_VERSION_PATTERN)
+  if (!match) {
+    return { reference: trimmed }
+  }
+
+  const reference = match[1].trim()
+  const version = match[2].toUpperCase()
+  if (!reference || !isValidTranslation(version)) {
+    return { reference: trimmed }
+  }
+
+  return { reference, version }
+}
+
+export async function parseReference(
+  text: string,
+  isValidTranslation?: TranslationChecker
+): Promise<ParsedReference | null> {
   const trimmed = text.trim()
   if (!trimmed) {
     return null
   }
 
+  const extracted = isValidTranslation
+    ? extractTrailingTranslation(trimmed, isValidTranslation)
+    : { reference: trimmed }
+  const referenceText = extracted.reference
+
   const parser = await getParser()
-  parser.parse(trimmed)
+  parser.parse(referenceText)
   const osis = parser.osis()
   if (!osis) {
     return null
@@ -41,7 +74,8 @@ export async function parseReference(text: string): Promise<ParsedReference | nu
 
   return {
     osis,
-    human: osisToSearchQuery(osis)
+    human: osisToSearchQuery(osis),
+    version: extracted.version
   }
 }
 

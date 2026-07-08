@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VersePeek — Peek scripture anywhere</title>
+    <meta
+      name="description"
+      content="Highlight a Bible reference anywhere on your desktop and instantly peek at the full passage. Free for Linux and Windows."
+    />
+    <meta property="og:title" content="VersePeek" />
+    <meta
+      property="og:description"
+      content="Highlight a Bible reference anywhere and peek at the full passage instantly."
+    />
+    <meta property="og:image" content="assets/popup.png" />
+    <link rel="icon" href="assets/icon.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="#top">
+          <img src="assets/icon.png" alt="" width="28" height="28" />
+          <span>VersePeek</span>
+        </a>
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Open menu"
+        >
+          <span></span>
+          <span></span>
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Primary">
+          <a href="#how">How it works</a>
+          <a href="#features">Features</a>
+          <a href="#download">Download</a>
+          <a href="#reviews">Reviews</a>
+          <a href="#feedback">Feedback</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="hero-atmosphere" aria-hidden="true"></div>
+        <div class="container hero-grid">
+          <div class="hero-copy reveal">
+            <p class="brand-mark">VersePeek</p>
+            <h1>Scripture at your fingertips—without leaving your flow.</h1>
+            <p class="hero-lead">
+              Highlight a Bible reference in any app, press your hotkey, and read the full passage
+              instantly.
+            </p>
+            <div class="cta-row">
+              <a class="button primary" href="#download">Download for Linux</a>
+              <a class="button primary soft" href="#download-windows">Download for Windows</a>
+              <a
+                class="button ghost"
+                href="https://github.com/etopeojo/VersePeek"
+                target="_blank"
+                rel="noreferrer"
+                >View on GitHub</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="container hero-visual reveal delay-1">
+          <figure class="product-frame">
+            <img
+              src="assets/popup.png"
+              alt="VersePeek popup showing John 21:9–13 in the New Living Translation"
+              width="480"
+              height="559"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="how">
+        <div class="container">
+          <p class="eyebrow reveal">How it works</p>
+          <h2 class="section-title reveal">Three steps. No context switch.</h2>
+          <ol class="steps">
+            <li class="reveal">
+              <span class="step-num">01</span>
+              <h3>Highlight</h3>
+              <p>Select a reference like <code>John 3:16</code> or <code>Matt. 4</code> in any app.</p>
+            </li>
+            <li class="reveal delay-1">
+              <span class="step-num">02</span>
+              <h3>Press hotkey</h3>
+              <p>Default is <strong>Ctrl+Shift+B</strong>. Change it anytime in Settings.</p>
+            </li>
+            <li class="reveal delay-2">
+              <span class="step-num">03</span>
+              <h3>Read</h3>
+              <p>Peek the passage, switch translations, then close with × or Esc.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section section-alt" id="features">
+        <div class="container">
+          <p class="eyebrow reveal">Features</p>
+          <h2 class="section-title reveal">Built for real study moments.</h2>
+          <ul class="feature-list">
+            <li class="reveal">
+              <h3>Global hotkey</h3>
+              <p>Lookup from any desktop app without copy-pasting into a browser.</p>
+            </li>
+            <li class="reveal delay-1">
+              <h3>Many translations</h3>
+              <p>Default NLT—or pass a version inline, like <code>John 3:16 NKJV</code>.</p>
+            </li>
+            <li class="reveal delay-2">
+              <h3>Flexible references</h3>
+              <p>
+                Chapter-only, ranges, and natural phrasing such as
+                <em>Romans chapter 7, verses 18 and 23</em>.
+              </p>
+            </li>
+            <li class="reveal delay-3">
+              <h3>Quiet tray app</h3>
+              <p>Press-to-bind hotkeys, startup option, and About—all from the system tray.</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="screenshots">
+        <div class="container">
+          <p class="eyebrow reveal">Inside the app</p>
+          <h2 class="section-title reveal">Clear popup. Simple settings.</h2>
+          <div class="shot-stack">
+            <figure class="shot reveal">
+              <div class="product-frame">
+                <img
+                  src="assets/popup.png"
+                  alt="Passage popup with translation selector"
+                  width="480"
+                  height="559"
+                />
+              </div>
+              <figcaption>Passage popup — switch translations without re-selecting text.</figcaption>
+            </figure>
+            <figure class="shot reveal delay-1">
+              <div class="product-frame light">
+                <img
+                  src="assets/settings.png"
+                  alt="Settings window with hotkey recorder"
+                  width="519"
+                  height="555"
+                />
+              </div>
+              <figcaption>Settings — press to bind your hotkey; launch at startup if you like.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-alt" id="download">
+        <div class="container">
+          <p class="eyebrow reveal">Download</p>
+          <h2 class="section-title reveal">Get VersePeek 1.0.0</h2>
+          <p class="section-lead reveal">
+            Free and open source. Installers are published on
+            <a href="https://github.com/etopeojo/VersePeek/releases/tag/v1.0.0" target="_blank" rel="noreferrer"
+              >GitHub Releases</a
+            >.
+          </p>
+          <div class="download-grid">
+            <article class="download-card reveal" id="download-linux">
+              <h3>Linux</h3>
+              <p>Ubuntu / Debian and portable AppImage.</p>
+              <div class="download-actions">
+                <a
+                  class="button primary"
+                  href="https://github.com/etopeojo/VersePeek/releases/download/v1.0.0/versepeek_1.0.0_amd64.deb"
+                  >.deb package</a
+                >
+                <a
+                  class="button ghost"
+                  href="https://github.com/etopeojo/VersePeek/releases/download/v1.0.0/VersePeek-1.0.0.AppImage"
+                  >AppImage</a
+                >
+              </div>
+              <p class="tip"><code>sudo apt install ./versepeek_1.0.0_amd64.deb</code></p>
+            </article>
+            <article class="download-card reveal delay-1" id="download-windows">
+              <h3>Windows</h3>
+              <p>NSIS installer — choose your install folder.</p>
+              <div class="download-actions">
+                <a
+                  class="button primary"
+                  href="https://github.com/etopeojo/VersePeek/releases/download/v1.0.0/VersePeek%20Setup%201.0.0.exe"
+                  >Download .exe</a
+                >
+                <a
+                  class="button ghost"
+                  href="https://github.com/etopeojo/VersePeek/releases/tag/v1.0.0"
+                  target="_blank"
+                  rel="noreferrer"
+                  >All assets</a
+                >
+              </div>
+              <p class="tip">Unsigned builds may show SmartScreen — More info → Run anyway.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="reviews">
+        <div class="container">
+          <p class="eyebrow reveal">Reviews</p>
+          <h2 class="section-title reveal">What people are saying</h2>
+          <p class="section-lead reveal">
+            Curated notes from early users. Want to share yours? Open a short review Issue—we’ll feature
+            the best ones here.
+          </p>
+          <div class="reviews-grid">
+            <blockquote class="review reveal">
+              <p>
+                “Finally I can check a verse mid-sermon notes without opening a pile of tabs. The
+                hotkey feels native.”
+              </p>
+              <footer>— Early tester</footer>
+            </blockquote>
+            <blockquote class="review reveal delay-1">
+              <p>
+                “Natural references like ‘Romans chapter 7, verses 18 and 23’ just worked. That alone
+                sold me.”
+              </p>
+              <footer>— Bible study lead</footer>
+            </blockquote>
+            <blockquote class="review reveal delay-2">
+              <p>
+                “Clean tray app, dark popup that matches my desktop, and I set my own shortcut in
+                seconds.”
+              </p>
+              <footer>— Linux user</footer>
+            </blockquote>
+          </div>
+          <div class="cta-row center reveal">
+            <a
+              class="button primary"
+              href="https://github.com/etopeojo/VersePeek/issues/new?template=review.yml"
+              target="_blank"
+              rel="noreferrer"
+              >Share a review</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-alt" id="feedback">
+        <div class="container narrow">
+          <p class="eyebrow reveal">Feedback</p>
+          <h2 class="section-title reveal">Help shape what comes next</h2>
+          <p class="section-lead reveal">
+            Bugs, ideas, and rough edges—tell us through a GitHub Issue. Public and tracked so nothing
+            gets lost in an inbox.
+          </p>
+          <div class="cta-row center reveal">
+            <a
+              class="button primary"
+              href="https://github.com/etopeojo/VersePeek/issues/new?template=feedback.yml"
+              target="_blank"
+              rel="noreferrer"
+              >Send feedback</a
+            >
+            <a
+              class="button ghost"
+              href="https://github.com/etopeojo/VersePeek/issues"
+              target="_blank"
+              rel="noreferrer"
+              >Browse open issues</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <strong>VersePeek</strong>
+          <p>By KaleoTechSolutions · MIT License</p>
+        </div>
+        <p class="attribution">
+          Scripture text courtesy of
+          <a href="https://www.biblegateway.com/" target="_blank" rel="noreferrer">Bible Gateway</a>.
+        </p>
+        <a href="https://github.com/etopeojo/VersePeek" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+    </footer>
+
+    <script src="main.js" defer></script>
+  </body>
+</html>

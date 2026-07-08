@@ -1,0 +1,35 @@
+name: Review
+description: Share a short review of VersePeek (we may feature it on the website)
+title: "[Review]: "
+labels: ["review"]
+body:
+  - type: textarea
+    id: review
+    attributes:
+      label: Your review
+      description: A short quote we could show on the VersePeek site (keep it kind and useful).
+      placeholder: What do you like? How do you use it day to day?
+    validations:
+      required: true
+  - type: input
+    id: display_name
+    attributes:
+      label: How should we credit you?
+      description: First name, initials, or “Anonymous” — only if you’re happy for this to appear on the public site.
+      placeholder: e.g. Amaka · Anonymous · Pastor J.
+    validations:
+      required: true
+  - type: dropdown
+    id: permission
+    attributes:
+      label: Can we feature this review on etopeojo.github.io/VersePeek?
+      options:
+        - "Yes"
+        - "No — feedback only"
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform (optional)
+      placeholder: Linux / Windows

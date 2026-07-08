@@ -34,6 +34,19 @@ Highlight a Bible reference anywhere on your desktop and instantly peek at the f
 - Press-to-bind hotkey in Settings (no need to type Electron accelerator syntax)
 - Runs quietly in the system tray
 
+## Website
+
+Product page (GitHub Pages): **[etopeojo.github.io/VersePeek](https://etopeojo.github.io/VersePeek/)**
+
+Source lives in [`website/`](website/). On push to `main`, [`.github/workflows/pages.yml`](.github/workflows/pages.yml) deploys it.
+
+To enable publishing the first time: GitHub → **Settings** → **Pages** → **Source: GitHub Actions**.
+
+### Reviews & feedback
+
+- **Reviews** on the site are curated by hand from Issues labeled `review`.
+- Visitors can **[share a review](https://github.com/etopeojo/VersePeek/issues/new?template=review.yml)** or **[send feedback](https://github.com/etopeojo/VersePeek/issues/new?template=feedback.yml)** via GitHub Issue templates.
+
 ## Download
 
 Get the latest installers from **[GitHub Releases](https://github.com/etopeojo/VersePeek/releases)**.

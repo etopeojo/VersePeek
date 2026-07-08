@@ -304,11 +304,14 @@ async function lookupAndShowPassage(reference: string, osis: string, version: st
 }
 
 async function handleHotkeyTrigger(): Promise<void> {
-  showPopupWindow()
-  beginLookup()
-
+  // Capture while the source app still has focus. Showing the popup first
+  // steals focus on Windows so the simulated Ctrl+C never copies the selection.
   try {
     const selectedText = await captureSelectedText()
+
+    showPopupWindow()
+    beginLookup()
+
     if (!selectedText) {
       notifyPassageError(
         'No text selected. Highlight a Bible reference like John 3:16, then press the hotkey.'
@@ -328,6 +331,8 @@ async function handleHotkeyTrigger(): Promise<void> {
     const version = parsed.version ?? settings.defaultTranslation
     await lookupAndShowPassage(parsed.human, parsed.osis, version)
   } catch (error) {
+    showPopupWindow()
+    beginLookup()
     const message = error instanceof Error ? error.message : 'Unexpected error during lookup.'
     notifyPassageError(message)
   }

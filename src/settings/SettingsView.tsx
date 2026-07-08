@@ -1,23 +1,26 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { AppSettings, Translation } from '../shared/types'
+import {
+  acceleratorFromEvent,
+  DEFAULT_HOTKEY,
+  formatHotkeyForDisplay
+} from './acceleratorFromEvent'
 
 export function SettingsView(): JSX.Element {
   const [settings, setSettings] = useState<AppSettings | null>(null)
   const [translations, setTranslations] = useState<Translation[]>([])
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
-  const [hotkeyInput, setHotkeyInput] = useState('')
+  const [isRecordingHotkey, setIsRecordingHotkey] = useState(false)
 
   useEffect(() => {
     void window.versepeek.getSettings().then((loaded) => {
       setSettings(loaded)
-      setHotkeyInput(loaded.hotkey)
     })
     void window.versepeek.getTranslations().then(setTranslations)
 
     return window.versepeek.onSettingsUpdated((updated) => {
       setSettings(updated)
-      setHotkeyInput(updated.hotkey)
     })
   }, [])
 
@@ -44,16 +47,64 @@ export function SettingsView(): JSX.Element {
     return groups
   }, [filteredTranslations])
 
-  const save = async (partial: Partial<AppSettings>): Promise<void> => {
+  const save = useCallback(async (partial: Partial<AppSettings>): Promise<boolean> => {
     setStatus('')
     try {
       const updated = await window.versepeek.saveSettings(partial)
       setSettings(updated)
       setStatus('Settings saved.')
+      return true
     } catch {
       setStatus('Failed to save settings.')
+      return false
     }
-  }
+  }, [])
+
+  const saveHotkey = useCallback(
+    async (hotkey: string): Promise<void> => {
+      const saved = await save({ hotkey })
+      if (saved) {
+        setStatus(`Hotkey saved: ${formatHotkeyForDisplay(hotkey)}`)
+      } else {
+        setStatus('Could not save hotkey.')
+      }
+    },
+    [save]
+  )
+
+  useEffect(() => {
+    if (!isRecordingHotkey) {
+      return
+    }
+
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      const result = acceleratorFromEvent(event)
+      if (!result.ok) {
+        if (result.reason === 'cancelled') {
+          setIsRecordingHotkey(false)
+          setStatus('Hotkey change cancelled.')
+          return
+        }
+        if (result.reason === 'missing-modifier') {
+          setStatus('Include at least one modifier key (Ctrl, Alt, or Shift).')
+          return
+        }
+        if (result.reason === 'unsupported-key') {
+          setStatus('That key is not supported. Try a letter, number, or function key.')
+        }
+        return
+      }
+
+      setIsRecordingHotkey(false)
+      void saveHotkey(result.accelerator)
+    }
+
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => window.removeEventListener('keydown', handleKeyDown, true)
+  }, [isRecordingHotkey, saveHotkey])
 
   if (!settings) {
     return (
@@ -62,6 +113,10 @@ export function SettingsView(): JSX.Element {
       </div>
     )
   }
+
+  const hotkeyDisplay = isRecordingHotkey
+    ? 'Listening for keys…'
+    : formatHotkeyForDisplay(settings.hotkey)
 
   return (
     <div className="settings-page">
@@ -97,19 +152,40 @@ export function SettingsView(): JSX.Element {
       </section>
 
       <section>
-        <label htmlFor="hotkey">Lookup hotkey</label>
-        <p className="hint">Use Electron accelerator format, e.g. CommandOrControl+Shift+B</p>
+        <label htmlFor="hotkey-display">Lookup hotkey</label>
+        <p className="hint">Click Change hotkey, then press your new shortcut. Press Esc to cancel.</p>
         <div className="hotkey-row">
-          <input
-            id="hotkey"
-            type="text"
-            value={hotkeyInput}
-            onChange={(event) => setHotkeyInput(event.target.value)}
-          />
-          <button type="button" onClick={() => void save({ hotkey: hotkeyInput })}>
-            Apply hotkey
+          <div
+            id="hotkey-display"
+            className={`hotkey-display${isRecordingHotkey ? ' recording' : ''}`}
+            aria-live="polite"
+          >
+            {hotkeyDisplay}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (isRecordingHotkey) {
+                setIsRecordingHotkey(false)
+                setStatus('Hotkey change cancelled.')
+                return
+              }
+              setStatus('')
+              setIsRecordingHotkey(true)
+            }}
+          >
+            {isRecordingHotkey ? 'Cancel' : 'Change hotkey'}
           </button>
         </div>
+        {!isRecordingHotkey && settings.hotkey !== DEFAULT_HOTKEY && (
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={() => void saveHotkey(DEFAULT_HOTKEY)}
+          >
+            Reset to default
+          </button>
+        )}
       </section>
 
       <section>

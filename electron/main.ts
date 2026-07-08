@@ -1,14 +1,14 @@
 import {
   app,
   BrowserWindow,
+  dialog,
   ipcMain,
   Menu,
   nativeImage,
   screen,
-  shell,
   Tray
 } from 'electron'
-import { existsSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { fetchPassage } from './services/bibleGateway'
@@ -18,6 +18,33 @@ import { captureSelectedText } from './services/selection'
 import { getSettings, saveSettings } from './services/settings'
 import { getTranslations, isValidTranslation } from './services/translations'
 import type { AppSettings, PassageResult, PopupViewState } from '../src/shared/types'
+
+interface PackageInfo {
+  description?: string
+  author?: string | { name?: string; email?: string }
+}
+
+function getPackageInfo(): PackageInfo {
+  const candidates = [
+    join(app.getAppPath(), 'package.json'),
+    join(process.cwd(), 'package.json'),
+    join(__dirname, '../../package.json')
+  ]
+
+  for (const candidate of candidates) {
+    if (!existsSync(candidate)) {
+      continue
+    }
+
+    try {
+      return JSON.parse(readFileSync(candidate, 'utf-8')) as PackageInfo
+    } catch {
+      // Try the next candidate.
+    }
+  }
+
+  return {}
+}
 
 let tray: Tray | null = null
 let popupWindow: BrowserWindow | null = null
@@ -324,6 +351,35 @@ function setupHotkey(): void {
   }
 }
 
+function showAboutDialog(): void {
+  const packageInfo = getPackageInfo()
+  const version = app.getVersion()
+  const author =
+    typeof packageInfo.author === 'string'
+      ? packageInfo.author
+      : packageInfo.author?.name ?? 'KaleoTechSolutions'
+  const description =
+    packageInfo.description ??
+    'Highlight a Bible reference anywhere and peek at the full passage instantly'
+
+  void dialog.showMessageBox({
+    type: 'info',
+    title: 'About VersePeek',
+    message: 'VersePeek',
+    detail: [
+      description,
+      '',
+      `Version: ${version}`,
+      `Author: ${author}`,
+      '',
+      'Scripture text courtesy of Bible Gateway.'
+    ].join('\n'),
+    buttons: ['OK'],
+    defaultId: 0,
+    noLink: true
+  })
+}
+
 function createTray(): void {
   tray = new Tray(createTrayIcon())
   tray.setToolTip('VersePeek — Ctrl+Shift+B to lookup a passage')
@@ -335,9 +391,7 @@ function createTray(): void {
     },
     {
       label: 'About VersePeek',
-      click: () => {
-        void shell.openExternal('https://www.biblegateway.com/')
-      }
+      click: () => showAboutDialog()
     },
     { type: 'separator' },
     {

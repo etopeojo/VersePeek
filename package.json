@@ -7,7 +7,7 @@
     "name": "KaleoTechSolutions",
     "email": "etopeojo@gmail.com"
   },
-  "homepage": "https://github.com/kaleotech/versepeek",
+  "homepage": "https://github.com/etopeojo/VersePeek",
   "license": "MIT",
   "scripts": {
     "dev": "electron-vite dev",

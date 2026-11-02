@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { AppSettings, PassageResult, PopupViewState, Translation } from '../shared/types'
+import {
+  DEFAULT_HOTKEY,
+  formatHotkeyForDisplay
+} from '../settings/acceleratorFromEvent'
 
 type ViewState = 'idle' | 'loading' | 'success' | 'error'
 
@@ -60,6 +64,7 @@ export function PassageView(): JSX.Element {
   const [reference, setReference] = useState('')
   const [selectedVersion, setSelectedVersion] = useState('NLT')
   const [translations, setTranslations] = useState<Translation[]>([])
+  const [hotkey, setHotkey] = useState(DEFAULT_HOTKEY)
 
   const loadPassage = useCallback(async (ref: string, version: string) => {
     setViewState('loading')
@@ -88,6 +93,7 @@ export function PassageView(): JSX.Element {
 
     void window.versepeek.getSettings().then((settings: AppSettings) => {
       setSelectedVersion(settings.defaultTranslation)
+      setHotkey(settings.hotkey)
     })
     void window.versepeek.getTranslations().then(setTranslations)
     void window.versepeek.getPopupState().then((state) => {
@@ -112,6 +118,7 @@ export function PassageView(): JSX.Element {
 
     const unsubSettings = window.versepeek.onSettingsUpdated((settings) => {
       setSelectedVersion(settings.defaultTranslation)
+      setHotkey(settings.hotkey)
     })
 
     return () => {
@@ -203,7 +210,9 @@ export function PassageView(): JSX.Element {
 
         {viewState === 'idle' && (
           <div className="state-message">
-            <p>Highlight a Bible reference and press Ctrl+Shift+B.</p>
+            <p>
+              Highlight a Bible reference and press {formatHotkeyForDisplay(hotkey)}.
+            </p>
           </div>
         )}
       </main>

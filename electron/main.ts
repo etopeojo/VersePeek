@@ -6,6 +6,7 @@ import {
   Menu,
   nativeImage,
   screen,
+  systemPreferences,
   Tray
 } from 'electron'
 import { existsSync, readFileSync } from 'fs'
@@ -78,11 +79,22 @@ function createAppIcon(): Electron.NativeImage {
   return nativeImage.createEmpty()
 }
 
+function formatHotkeyForDisplay(accelerator: string): string {
+  const modifierLabel = process.platform === 'darwin' ? 'Cmd' : 'Ctrl'
+  return accelerator
+    .split('+')
+    .map((part) => (part === 'CommandOrControl' ? modifierLabel : part))
+    .join('+')
+}
+
 function createTrayIcon(): Electron.NativeImage {
-  const trayIconPath = getAssetPath('icon-tray.png')
+  const isMac = process.platform === 'darwin'
+  const baseName = isMac ? 'icon-tray-template' : 'icon-tray'
+  const trayIconPath = getAssetPath(`${baseName}.png`)
   const trayImage = nativeImage.createFromPath(trayIconPath)
+
   if (!trayImage.isEmpty()) {
-    const trayIcon2xPath = getAssetPath('icon-tray@2x.png')
+    const trayIcon2xPath = getAssetPath(`${baseName}@2x.png`)
     const trayImage2x = nativeImage.createFromPath(trayIcon2xPath)
     if (!trayImage2x.isEmpty()) {
       trayImage.addRepresentation({
@@ -90,7 +102,18 @@ function createTrayIcon(): Electron.NativeImage {
         buffer: trayImage2x.toPNG()
       })
     }
+    if (isMac) {
+      trayImage.setTemplateImage(true)
+    }
     return trayImage
+  }
+
+  // Fall back to the colored tray icon if templates are missing.
+  if (isMac) {
+    const colored = nativeImage.createFromPath(getAssetPath('icon-tray.png'))
+    if (!colored.isEmpty()) {
+      return colored
+    }
   }
 
   const image = createAppIcon()
@@ -102,6 +125,32 @@ function createTrayIcon(): Electron.NativeImage {
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAHklEQVQ4T2NkYGD4z0ABYBw1gGE0DBhGwwAGBgYAALQAAfQ1Q8YAAAAASUVORK5CYII='
   )
   return fallback.resize({ width: 22, height: 22 })
+}
+
+function ensureAccessibilityPermission(): boolean {
+  if (process.platform !== 'darwin') {
+    return true
+  }
+
+  const trusted = systemPreferences.isTrustedAccessibilityClient(true)
+  if (trusted) {
+    return true
+  }
+
+  void dialog.showMessageBox({
+    type: 'warning',
+    title: 'Accessibility permission needed',
+    message: 'VersePeek needs Accessibility access',
+    detail: [
+      'To read highlighted text, VersePeek must simulate Cmd+C in other apps.',
+      '',
+      'Open System Settings → Privacy & Security → Accessibility, enable VersePeek (or Electron while developing), then try the hotkey again.'
+    ].join('\n'),
+    buttons: ['OK'],
+    defaultId: 0
+  })
+
+  return false
 }
 
 function createPopupWindow(x: number, y: number): BrowserWindow {
@@ -307,6 +356,10 @@ async function handleHotkeyTrigger(): Promise<void> {
   // Capture while the source app still has focus. Showing the popup first
   // steals focus on Windows so the simulated Ctrl+C never copies the selection.
   try {
+    if (!ensureAccessibilityPermission()) {
+      return
+    }
+
     const selectedText = await captureSelectedText()
 
     showPopupWindow()
@@ -387,7 +440,8 @@ function showAboutDialog(): void {
 
 function createTray(): void {
   tray = new Tray(createTrayIcon())
-  tray.setToolTip('VersePeek — Ctrl+Shift+B to lookup a passage')
+  const hotkeyLabel = formatHotkeyForDisplay(getSettings().hotkey)
+  tray.setToolTip(`VersePeek — ${hotkeyLabel} to lookup a passage`)
 
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -408,7 +462,17 @@ function createTray(): void {
   ])
 
   tray.setContextMenu(contextMenu)
-  tray.on('double-click', () => showSettingsWindow())
+  if (process.platform !== 'darwin') {
+    tray.on('double-click', () => showSettingsWindow())
+  }
+}
+
+function refreshTrayTooltip(): void {
+  if (!tray) {
+    return
+  }
+  const hotkeyLabel = formatHotkeyForDisplay(getSettings().hotkey)
+  tray.setToolTip(`VersePeek — ${hotkeyLabel} to lookup a passage`)
 }
 
 function registerIpcHandlers(): void {
@@ -428,6 +492,7 @@ function registerIpcHandlers(): void {
     const updated = saveSettings(partial)
     applyStartupSetting(updated.launchAtStartup)
     setupHotkey()
+    refreshTrayTooltip()
 
     settingsWindow?.webContents.send('settings-updated', updated)
     popupWindow?.webContents.send('settings-updated', updated)
@@ -452,6 +517,10 @@ function registerIpcHandlers(): void {
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.kaleotech.versepeek')
+
+  if (process.platform === 'darwin' && app.dock) {
+    app.dock.hide()
+  }
 
   registerIpcHandlers()
   createTray()

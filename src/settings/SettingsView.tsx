@@ -89,7 +89,8 @@ export function SettingsView(): JSX.Element {
           return
         }
         if (result.reason === 'missing-modifier') {
-          setStatus('Include at least one modifier key (Ctrl, Alt, or Shift).')
+          const primary = navigator.platform.toLowerCase().includes('mac') ? 'Cmd' : 'Ctrl'
+          setStatus(`Include at least one modifier key (${primary}, Alt, or Shift).`)
           return
         }
         if (result.reason === 'unsupported-key') {
@@ -203,7 +204,7 @@ export function SettingsView(): JSX.Element {
         <h2>How to use</h2>
         <ol>
           <li>Highlight a Bible reference in any app (e.g. John 3:16).</li>
-          <li>Press your hotkey (default: Ctrl+Shift+B).</li>
+          <li>Press your hotkey (default: {formatHotkeyForDisplay(DEFAULT_HOTKEY)}).</li>
           <li>Read the passage and switch translations in the popup.</li>
         </ol>
       </section>

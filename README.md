@@ -26,13 +26,13 @@ Highlight a Bible reference anywhere on your desktop and instantly peek at the f
 
 ## Features
 
-- Global hotkey lookup (default: **Ctrl+Shift+B**)
+- Global hotkey lookup (default: **Ctrl+Shift+B** / **Cmd+Shift+B** on Mac)
 - Works from any application — highlight text like `John 3:16`, press the hotkey
 - Supports natural references (`Romans chapter 7, verses 18 and 23`) and trailing versions (`John 3:16 NKJV`)
 - Default translation: **NLT** (configurable)
 - Switch translations in the popup without re-selecting text
 - Press-to-bind hotkey in Settings (no need to type Electron accelerator syntax)
-- Runs quietly in the system tray
+- Runs quietly in the system tray (menu bar on macOS)
 
 ## Website
 
@@ -53,6 +53,7 @@ Get the latest installers from **[GitHub Releases](https://github.com/etopeojo/V
 
 | Platform | File | Notes |
 |----------|------|--------|
+| **macOS** | `.dmg` | Apple Silicon (arm64) — drag to Applications |
 | **Linux** | `.deb` | Best for Ubuntu / Debian |
 | **Linux** | `.AppImage` | Portable — works on most desktop distros |
 | **Windows** | `.exe` (NSIS) | Standard installer (choose install folder) |
@@ -97,6 +98,14 @@ chmod +x VersePeek-1.0.0.AppImage
 ./VersePeek-1.0.0.AppImage
 ```
 
+### macOS
+
+1. Download the `.dmg` from [Releases](https://github.com/etopeojo/VersePeek/releases) (Apple Silicon / arm64).
+2. Open the disk image and drag **VersePeek** into **Applications**.
+3. First launch: right-click the app → **Open** (Gatekeeper blocks unsigned apps on double-click). Confirm **Open** in the dialog.
+4. When prompted, allow **Accessibility** access so VersePeek can read highlighted text (System Settings → Privacy & Security → Accessibility).
+5. Look for the VersePeek icon in the menu bar.
+
 ### Windows
 
 1. Download the Windows installer (`.exe`) from [Releases](https://github.com/etopeojo/VersePeek/releases).
@@ -107,9 +116,9 @@ chmod +x VersePeek-1.0.0.AppImage
 
 ## Usage
 
-1. Start VersePeek — it appears in the system tray.
+1. Start VersePeek — it appears in the system tray (menu bar on macOS).
 2. Highlight a Bible reference in any app (e.g. `John 3:16`, `Matt. 4`, or `John 3:16 NKJV`).
-3. Press **Ctrl+Shift+B** (or your configured hotkey).
+3. Press **Ctrl+Shift+B** / **Cmd+Shift+B** on Mac (or your configured hotkey).
 4. Read the passage; change translation from the dropdown if desired.
 5. Close with the **×** button or **Esc**.
 
@@ -117,7 +126,7 @@ Open **Settings** from the tray menu to change default translation, hotkey, or s
 
 ## Requirements
 
-- Linux (X11 recommended) or Windows
+- macOS 14+ (Apple Silicon), Linux (X11 recommended), or Windows
 - Internet connection for Bible Gateway lookups
 - For development/build only: Node.js 18+
 
@@ -131,6 +140,7 @@ npm run dev
 ## Build
 
 ```bash
+npm run dist:mac     # .dmg + .zip → release/ (run on a Mac)
 npm run dist:linux   # AppImage + .deb → release/
 npm run dist:win     # Windows NSIS installer → release/
 ```
@@ -142,6 +152,12 @@ npm run pack
 ```
 
 Installers are written to the `release/` folder.
+
+## macOS notes
+
+- Selection capture simulates **Cmd+C**, which requires **Accessibility** permission for VersePeek (or Electron in development).
+- Current release builds are **unsigned**. Use right-click → **Open** the first time. When you have an Apple Developer account, configure Developer ID signing and notarization in `electron-builder.yml` (remove `identity: null`, add entitlements + notarize env vars) for Gatekeeper-clean installs.
+- The Dock icon is hidden; the app lives in the menu bar.
 
 ## Linux notes
 

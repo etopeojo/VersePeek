@@ -6,7 +6,7 @@
     <title>VersePeek — Peek scripture anywhere</title>
     <meta
       name="description"
-      content="Highlight a Bible reference anywhere on your desktop and instantly peek at the full passage. Free for Linux and Windows."
+      content="Highlight a Bible reference anywhere on your desktop and instantly peek at the full passage. Free for macOS, Linux, and Windows."
     />
     <meta property="og:title" content="VersePeek" />
     <meta
@@ -64,7 +64,8 @@
               instantly.
             </p>
             <div class="cta-row">
-              <a class="button primary" href="#download">Download for Linux</a>
+              <a class="button primary" href="#download-mac">Download for Mac</a>
+              <a class="button primary soft" href="#download-linux">Download for Linux</a>
               <a class="button primary soft" href="#download-windows">Download for Windows</a>
               <a
                 class="button ghost"
@@ -101,7 +102,7 @@
             <li class="reveal delay-1">
               <span class="step-num">02</span>
               <h3>Press hotkey</h3>
-              <p>Default is <strong>Ctrl+Shift+B</strong>. Change it anytime in Settings.</p>
+              <p>Default is <strong>Ctrl+Shift+B</strong> (<strong>Cmd+Shift+B</strong> on Mac). Change it anytime in Settings.</p>
             </li>
             <li class="reveal delay-2">
               <span class="step-num">03</span>
@@ -182,7 +183,29 @@
             >.
           </p>
           <div class="download-grid">
-            <article class="download-card reveal" id="download-linux">
+            <article class="download-card reveal" id="download-mac">
+              <h3>macOS</h3>
+              <p>Apple Silicon (.dmg) — drag to Applications.</p>
+              <div class="download-actions">
+                <a
+                  class="button primary"
+                  href="https://github.com/etopeojo/VersePeek/releases/download/v1.0.0/VersePeek-1.0.0-arm64.dmg"
+                  >Download .dmg</a
+                >
+                <a
+                  class="button ghost"
+                  href="https://github.com/etopeojo/VersePeek/releases/tag/v1.0.0"
+                  target="_blank"
+                  rel="noreferrer"
+                  >All assets</a
+                >
+              </div>
+              <p class="tip">
+                Unsigned build: right-click → Open the first time. Allow Accessibility for selection
+                capture.
+              </p>
+            </article>
+            <article class="download-card reveal delay-1" id="download-linux">
               <h3>Linux</h3>
               <p>Ubuntu / Debian and portable AppImage.</p>
               <div class="download-actions">
@@ -199,7 +222,7 @@
               </div>
               <p class="tip"><code>sudo apt install ./versepeek_1.0.0_amd64.deb</code></p>
             </article>
-            <article class="download-card reveal delay-1" id="download-windows">
+            <article class="download-card reveal delay-2" id="download-windows">
               <h3>Windows</h3>
               <p>NSIS installer — choose your install folder.</p>
               <div class="download-actions">

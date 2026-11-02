@@ -16,7 +16,8 @@
     "pack": "npm run build && electron-builder --dir --config electron-builder.yml",
     "dist": "npm run build && electron-builder --config electron-builder.yml",
     "dist:linux": "npm run build && electron-builder --linux --config electron-builder.yml",
-    "dist:win": "npm run build && electron-builder --win --config electron-builder.yml"
+    "dist:win": "npm run build && electron-builder --win --config electron-builder.yml",
+    "dist:mac": "npm run build && electron-builder --mac --config electron-builder.yml"
   },
   "dependencies": {
     "@electron-toolkit/utils": "^3.0.0",
@@ -36,5 +37,8 @@
     "react-dom": "^18.3.1",
     "typescript": "^5.6.3",
     "vite": "^5.4.11"
+  },
+  "allowScripts": {
+    "electron@33.4.11": true
   }
 }

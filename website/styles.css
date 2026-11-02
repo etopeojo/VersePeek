@@ -23,6 +23,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
 }
 
 body {
@@ -426,6 +427,12 @@ code {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: rgba(15, 18, 28, 0.55);
+  /* Keep section title ("Get VersePeek…") in view when hero CTAs jump to a card */
+  scroll-margin-top: calc(var(--header-h) + 9.5rem);
+}
+
+#download {
+  scroll-margin-top: calc(var(--header-h) + 1rem);
 }
 
 .download-actions {
